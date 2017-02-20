@@ -48,6 +48,7 @@ for v in range (0, 10):
 	frame_no = 0
 	korak = 0
 	k = 0
+	kHT = 0
 	m = 0
 
 	#ucitavanje videa
@@ -63,6 +64,14 @@ for v in range (0, 10):
 	#trazenje svih kontura na prvom frejmu
 	im2, contours, hij = cv2.findContours(img_tr_open,cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)
 
+	edges = cv2.Canny(gray,50,150,apertureSize = 3)
+
+	minLineLength = 1000
+	maxLineGap = 10
+	lines = cv2.HoughLinesP(edges,1,np.pi/180,100,minLineLength,maxLineGap)
+	for x11,y11,x22,y22 in lines[0]:
+		kHT = float(y22-y11)/float(x22-x11)
+		
 	for i in range(0, len(contours)-1):
 		cnt = contours[i]
 		area = cv2.contourArea(cnt)
@@ -74,6 +83,10 @@ for v in range (0, 10):
 			#nagib linije
 			k = float(y-y+h)/float(x-x+w)
 			m = float(y) - float(x+w)*float(y-y+h)/float(x-x+w)
+			'''
+			y1 = int(kHT*(x))
+			korak = - y1 + y + h
+			'''
 			y1 = int(-k*(x))
 			korak = - y1 + y + h
 			
@@ -99,6 +112,7 @@ for v in range (0, 10):
 			cy = int(M['m01']/M['m00'])
 			
 			if area1 > 35 and area1 <1000:
+				#funkcija = int(kHT*(cx))
 				funkcija = int(-k*(cx))
 				funkcija = funkcija + korak +25
 				#ako se nalazi ispod linije 
